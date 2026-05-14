@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Apply — RoleTrace</title>
+  <meta name="description" content="AI-powered internship application form with auto-fill.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 14px;
+      padding: 30px 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      color: #111;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #111827;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #667eea;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #667eea;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    .ai-btn {
+      background: #111827;
+      margin-bottom: 10px;
+    }
+
+    .ai-btn:hover {
+      background: #000;
+    }
+
+    /* SUBMIT OVERLAY */
+    .submit-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 8, 18, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .submit-overlay.active { display: flex; }
+    .overlay-card {
+      background: #13131a;
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 20px;
+      padding: 40px 48px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(124,58,237,0.25);
+      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .overlay-ring {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      border: 4px solid rgba(124,58,237,0.2);
+      border-top-color: #a78bfa;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .overlay-title {
+      font-size: 22px; font-weight: 800;
+      color: #f1f0f5; margin-bottom: 8px;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .overlay-sub {
+      font-size: 14px; color: #9990b8;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 15px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    /* FLOATING AI WIDGET */
+    .ai-fab {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+      cursor: pointer;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: all 0.2s;
+    }
+    .ai-fab:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.6);
+    }
+    .chat-box {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 340px;
+      background: #ffffff;
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      text-align: left;
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .chat-box h4 {
+      font-size: 15px;
+      color: #111827;
+      margin-top: 0;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0;
+      width: auto;
+      line-height: 1;
+    }
+    .chat-close:hover {
+      color: #111827;
+    }
+    .chat-input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-row {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-select {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      outline: none;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .chat-input {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    .chat-input:focus, .chat-select:focus {
+      border-color: #7c3aed;
+    }
+    .chat-btn {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0 20px;
+      font-weight: 700;
+      cursor: pointer;
+      width: auto;
+    }
+    .chat-btn:disabled {
+      opacity: 0.5;
+    }
+
+    /* JOB DETAILS CARD */
+    .job-details-card {
+      background: rgba(124, 58, 237, 0.05);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .job-details-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f1f0f5;
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+    .job-details-card h3:first-child {
+      margin-top: 0;
+    }
+    .job-details-card p {
+      font-size: 14px;
+      color: #aaa8c8;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="badge">AI Assisted</div>
+
+  <div class="tag">Internship Application Form</div>
+
+  <h1 id="jobTitle">Apply</h1>
+  <p class="subtitle">Complete the form below. AI can auto-fill this for you.</p>
+
+  <div class="job-details-card" id="jobDetails" style="display:none;">
+    <h3>About the Company</h3>
+    <p id="companyAbout"></p>
+    <h3>Role Description</h3>
+    <p id="roleDesc"></p>
+  </div>
+
+  <form id="applyForm">
+
+    <label>Full Name</label>
+    <input 
+      id="full_name"
+      name="name"
+      data-field="full_name"
+      type="text"
+      placeholder="Enter your name">
+
+    <label>Email</label>
+    <input 
+      id="email"
+      name="email"
+      data-field="email"
+      type="email"
+      placeholder="Enter your email">
+
+    <label>Why do you want this internship?</label>
+    <textarea 
+      id="why_internship"
+      name="why"
+      data-field="why_internship"
+      placeholder="Write your answer..."></textarea>
+
+    <label>Describe your experience</label>
+    <textarea 
+      id="experience"
+      name="experience"
+      data-field="experience"
+      placeholder="Your projects, skills, work..."></textarea>
+
+    <label>Why should we select you?</label>
+    <textarea 
+      id="why_you"
+      name="why_you"
+      data-field="why_you"
+      placeholder="Your strengths..."></textarea>
+
+    <button type="button" class="ai-btn" id="autofillBtn" onclick="autoFillAI()">
+      🤖 Auto Fill with AI
+    </button>
+
+    <button type="submit">
+      Submit Application
+    </button>
+
+  </form>
+
+  <div class="footer">
+    Powered by AI Internship Assistant
+  </div>
+
+</div>
+
+<!-- FLOATING AI WIDGET -->
+<button class="ai-fab" id="aiFab" onclick="toggleChat()" style="display:none;" title="Refine with AI">
+  ✨
+</button>
+
+<div class="chat-box" id="chatBox">
+  <h4>
+    Refine AI Answers
+    <button class="chat-close" onclick="toggleChat()">×</button>
+  </h4>
+  <div class="chat-input-wrapper">
+    <select id="chatField" class="chat-select">
+      <option value="all">Rewrite All Fields</option>
+      <option value="why_internship">Why do you want this internship?</option>
+      <option value="experience">Describe your experience</option>
+      <option value="why_you">Why should we select you?</option>
+    </select>
+    <div class="chat-row">
+      <input type="text" id="chatInput" class="chat-input" placeholder="e.g. Make it shorter...">
+      <button type="button" class="chat-btn" id="rewriteBtn" onclick="startRewrite()">Rewrite</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT OVERLAY -->
+<div class="submit-overlay" id="submitOverlay">
+  <div class="overlay-card">
+    <div class="overlay-ring"></div>
+    <div class="overlay-title">Submitting Application</div>
+    <div class="overlay-sub">Sending your answers...</div>
+  </div>
+</div>
+
+<script>
+  // ---------------------------
+  // GET JOB CONTEXT FROM URL
+  // ---------------------------
+  const params = new URLSearchParams(window.location.search);
+
+  const role = params.get("role") || "Internship Role";
+  const company = params.get("company") || "Company";
+  const skills = params.get("skills") || "";
+  const desc = params.get("desc") || "";
+  const about = params.get("about") || "";
+  const sessionId = params.get("session") || "";
+
+  document.getElementById("jobTitle").innerText =
+    `Apply for ${role} at ${company}`;
+  
+  if (desc || about) {
+    document.getElementById("jobDetails").style.display = "block";
+    document.getElementById("companyAbout").innerText = about || "No details provided.";
+    document.getElementById("roleDesc").innerText = desc || "No description provided.";
+  }
+
+  // Global context for extension + AI
+  window.jobContext = {
+    role,
+    company,
+    skills,
+    session_id: sessionId
+  };
+
+  // Expose session for extension to read
+  window.__roletrace_session = sessionId;
+
+
+  // ---------------------------
+  // TYPEWRITER ENGINE
+  // ---------------------------
+  function typewriterFill(el, text) {
+    return new Promise(resolve => {
+      el.value = "";
+      el.style.transition = "box-shadow 0.3s ease, border-color 0.3s ease";
+      el.style.boxShadow = "0 0 0 3px rgba(124, 58, 237, 0.25)";
+      el.style.borderColor = "#7c3aed";
+
+      const chars = text.split("");
+      const totalMs = Math.max(chars.length * 18, 600);
+      const delay = Math.min(totalMs / chars.length, 40);
+
+      let i = 0;
+      function typeNext() {
+        if (i >= chars.length) {
+          el.style.boxShadow = "0 0 0 3px rgba(16, 185, 129, 0.3)";
+          el.style.borderColor = "#10b981";
+          setTimeout(() => {
+            el.style.boxShadow = "";
+            el.style.borderColor = "";
+            resolve();
+          }, 350);
+          return;
+        }
+        el.value += chars[i++];
+        setTimeout(typeNext, delay + Math.random() * 10);
+      }
+      typeNext();
+    });
+  }
+
+  // ---------------------------
+  // AI AUTOFILL
+  // ---------------------------
+  async function autoFillAI() {
+    const btn = document.getElementById("autofillBtn");
+    btn.disabled = true;
+    btn.innerText = "⏳ Generating...";
+
+    const fields = Array.from(document.querySelectorAll("[data-field]"))
+      .map(el => el.getAttribute("data-field"));
+
+    try {
+      const response = await fetch("/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job: window.jobContext,
+          fields: fields,
+          session_id: sessionId
+        })
+      });
+
+      const data = await response.json();
+
+      // Animate sequentially
+      for (let key in data) {
+        const el = document.querySelector(`[data-field="${key}"]`);
+        if (el && data[key]) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          await new Promise(r => setTimeout(r, 200));
+          await typewriterFill(el, data[key]);
+        }
+      }
+
+      // Show Floating Action Button instead of chat box directly
+      document.getElementById("aiFab").style.display = "flex";
+      btn.innerText = "✅ Filled with AI";
+      
+      // Auto open it the first time so they know it's there
+      setTimeout(() => {
+        if(document.getElementById("chatBox").style.display !== "block") {
+           toggleChat();
+        }
+      }, 500);
+
+    } catch (err) {
+      console.error("AI Autofill failed:", err);
+      alert("AI autofill failed. Check console or backend status.");
+      btn.innerText = "🤖 Auto Fill with AI";
+      btn.disabled = false;
+    }
+  }
+
+  // ---------------------------
+  // AI FOLLOW-UP REWRITE
+  // ---------------------------
+  async function startRewrite() {
+    const input = document.getElementById("chatInput");
+    const select = document.getElementById("chatField");
+    const btn = document.getElementById("rewriteBtn");
+    const instruction = input.value.trim();
+    if (!instruction) return;
+
+    input.disabled = true;
+    select.disabled = true;
+    btn.disabled = true;
+    btn.innerText = "Wait...";
+
+    // Determine target fields
+    const allFields = Array.from(document.querySelectorAll("[data-field]"))
+      .map(el => el.getAttribute("data-field"));
+    const targetField = select.value;
+    const fieldsToRewrite = targetField === "all" ? allFields : [targetField];
+
+    // Collect current values
+    const current_answers = {};
+    allFields.forEach(f => {
+      const el = document.querySelector(`[data-field="${f}"]`);
+      if (el) current_answers[f] = el.value;
+    });
+
+    try {
+      const res = await fetch("/rewrite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          job: window.jobContext,
+          instruction: instruction,
+          current_answers: current_answers,
+          fields: fieldsToRewrite,
+          session_id: sessionId
+        })
+      });
+
+      const data = await res.json();
+      if (Object.keys(data).length === 0) throw new Error("No changes.");
+
+      // Animate sequentially
+      for (let key in data) {
+        const el = document.querySelector(`[data-field="${key}"]`);
+        if (el && data[key]) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          await new Promise(r => setTimeout(r, 200));
+          await typewriterFill(el, data[key]);
+        }
+      }
+
+      input.value = "";
+      input.placeholder = "Rewrite again? (e.g. Focus on teamwork)";
+
+    } catch (err) {
+      console.error("Rewrite failed:", err);
+      alert("Rewrite failed: " + err.message);
+    } finally {
+      input.disabled = false;
+      select.disabled = false;
+      btn.disabled = false;
+      btn.innerText = "Rewrite";
+    }
+  }
+
+  function toggleChat() {
+    const box = document.getElementById("chatBox");
+    box.style.display = (box.style.display === "block") ? "none" : "block";
+  }
+  // ---------------------------
+  // FORM SUBMIT → REDIRECT
+  // ---------------------------
+  document.getElementById("applyForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    // Show overlay spinner
+    document.getElementById("submitOverlay").classList.add("active");
+
+    // Simulate brief submission delay, then redirect with success params
+    setTimeout(() => {
+      const successUrl = "/?submitted=true"
+        + "&role=" + encodeURIComponent(role)
+        + "&company=" + encodeURIComponent(company);
+      window.location.href = successUrl;
+    }, 1800);
+  });
+
+</script>
+
+</body>
+</html>
