@@ -1,13 +1,3 @@
----
-title: RoleTrace
-emoji: 🚀
-colorFrom: purple
-colorTo: indigo
-sdk: docker
-pinned: false
-app_port: 7860
----
-
 # RoleTrace AI — Smart Internship Application Suite 🚀
 
 RoleTrace is an AI-powered platform designed to streamline the internship hunt. It combines a professional job discovery portal with a powerful Chrome Extension that autofills complex application forms using high-quality, AI-generated answers.
