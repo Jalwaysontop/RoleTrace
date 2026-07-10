@@ -2,7 +2,7 @@
 // Opens the side panel automatically when user is on an apply page
 
 const APPLY_PATTERNS = [
-  "roletrace.onrender.com/apply",
+  "roletrace.duckdns.org/apply",
   "localhost:8000/apply"
 ];
 

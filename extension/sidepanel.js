@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────
 // CONFIG — update after Render deploy
 // ─────────────────────────────────────────
-const BACKEND_URL = "https://roletrace.onrender.com";
+const BACKEND_URL = "https://roletrace.duckdns.org";
 // For local dev, comment the above and use:
 // const BACKEND_URL = "http://localhost:8000";
 

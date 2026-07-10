@@ -12,7 +12,7 @@
   ],
 
   "host_permissions": [
-    "https://roletrace.onrender.com/*",
+    "https://roletrace.duckdns.org/*",
     "http://localhost:8000/*"
   ],
 
@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://roletrace.onrender.com/apply*",
+        "https://roletrace.duckdns.org/apply*",
         "http://localhost:8000/apply*"
       ],
       "js": ["content.js"],
