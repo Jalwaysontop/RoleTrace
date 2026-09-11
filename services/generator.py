@@ -30,7 +30,7 @@ Resume:
 """
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0
         )
@@ -84,7 +84,7 @@ Be specific to the role. Sound genuine, not robotic.
 
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.4
         )
@@ -168,7 +168,7 @@ Return format:
 
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5
         )
