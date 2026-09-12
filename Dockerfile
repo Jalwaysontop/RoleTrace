@@ -16,7 +16,7 @@ COPY . .
 # Build FAISS index from internship data
 RUN python build_index.py
 
-# Hugging Face Spaces uses port 7860
-EXPOSE 7860
+# AWS nginx proxies to port 8000
+EXPOSE 8000
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
